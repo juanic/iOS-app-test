@@ -46,6 +46,8 @@ jobs:
             shared/build/bin/iosX64/debugFramework/Shared.framework/Shared \
             shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework/Shared \
             -output shared/build/xcode-frameworks/Shared.framework/Shared
+          echo "--- header symbols ---"
+          grep -nE "SessionMetricsSnapshot|CopEllipse|SessionRecorder|compute\(" shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework/Headers/Shared.h || true
       - name: Generate Xcode project
         working-directory: iosApp
         run: xcodegen generate
