@@ -42,50 +42,62 @@ struct SessionRecord: Codable, Identifiable {
 
 extension SessionRecord {
     init(
-        snapshot: SessionMetricsSnapshot,
-        ellipse: CopEllipse?,
+        pointCount: Int,
+        durationSeconds: Double,
+        swayPathLengthMm: Double,
+        ellipseAreaMm2: Double,
+        meanVelocityMmS: Double,
+        rangeXmm: Double,
+        rmsXmm: Double,
+        rangeYmm: Double,
+        rmsYmm: Double,
+        s1Avg: Double,
+        s2Avg: Double,
+        s3Avg: Double,
+        s1Max: Double,
+        s2Max: Double,
+        s3Max: Double,
+        s1Min: Double,
+        s2Min: Double,
+        s3Min: Double,
+        totalAvgLoad: Double,
+        meanFreqXHz: Double?,
+        meanFreqYHz: Double?,
         deviceName: String,
         timestamp: Date,
         xs: [Double],
         ys: [Double],
-        ts: [Int64]
+        ts: [Int64],
+        ellipse: CopEllipseRecord?
     ) {
         id = UUID()
         self.timestamp = timestamp
         self.deviceName = deviceName
-        pointCount = Int(snapshot.pointCount)
-        durationSeconds = snapshot.durationSeconds
-        swayPathLengthMm = snapshot.swayPathLengthMm
-        ellipseAreaMm2 = snapshot.ellipseAreaMm2
-        meanVelocityMmS = snapshot.meanVelocityMmS
-        rangeXmm = snapshot.rangeXmm
-        rmsXmm = snapshot.rmsXmm
-        rangeYmm = snapshot.rangeYmm
-        rmsYmm = snapshot.rmsYmm
-        s1Avg = snapshot.s1Avg
-        s2Avg = snapshot.s2Avg
-        s3Avg = snapshot.s3Avg
-        s1Max = snapshot.s1Max
-        s2Max = snapshot.s2Max
-        s3Max = snapshot.s3Max
-        s1Min = snapshot.s1Min
-        s2Min = snapshot.s2Min
-        s3Min = snapshot.s3Min
-        totalAvgLoad = snapshot.totalAvgLoad
-        meanFreqXHz = snapshot.meanFreqXHz.isNaN ? nil : snapshot.meanFreqXHz
-        meanFreqYHz = snapshot.meanFreqYHz.isNaN ? nil : snapshot.meanFreqYHz
+        self.pointCount = pointCount
+        self.durationSeconds = durationSeconds
+        self.swayPathLengthMm = swayPathLengthMm
+        self.ellipseAreaMm2 = ellipseAreaMm2
+        self.meanVelocityMmS = meanVelocityMmS
+        self.rangeXmm = rangeXmm
+        self.rmsXmm = rmsXmm
+        self.rangeYmm = rangeYmm
+        self.rmsYmm = rmsYmm
+        self.s1Avg = s1Avg
+        self.s2Avg = s2Avg
+        self.s3Avg = s3Avg
+        self.s1Max = s1Max
+        self.s2Max = s2Max
+        self.s3Max = s3Max
+        self.s1Min = s1Min
+        self.s2Min = s2Min
+        self.s3Min = s3Min
+        self.totalAvgLoad = totalAvgLoad
+        self.meanFreqXHz = meanFreqXHz
+        self.meanFreqYHz = meanFreqYHz
         self.xs = xs
         self.ys = ys
         self.ts = ts
-        self.ellipse = ellipse.map {
-            CopEllipseRecord(
-                centerX: $0.centerX,
-                centerY: $0.centerY,
-                semiMajor: $0.semiMajor,
-                semiMinor: $0.semiMinor,
-                angleRad: $0.angleRad
-            )
-        }
+        self.ellipse = ellipse
     }
 
     var dateText: String {

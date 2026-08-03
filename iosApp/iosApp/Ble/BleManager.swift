@@ -152,7 +152,7 @@ final class BleManager: NSObject, ObservableObject {
         recordStart = nil
         let duration = Date().timeIntervalSince(start)
         let snapshot = recorder.compute(durationSeconds: duration)
-        let ellipse = recorder.ellipse()
+        let kotlinEllipse = recorder.ellipse()
 
         let kotlinXs = recorder.xs()
         let kotlinYs = recorder.ys()
@@ -164,14 +164,45 @@ final class BleManager: NSObject, ObservableObject {
         for i in 0..<kotlinYs.size { ys.append(kotlinYs.get(index: i)) }
         for i in 0..<kotlinTs.size { ts.append(kotlinTs.get(index: i)) }
 
+        let ellipse: CopEllipseRecord?
+        if let k = kotlinEllipse {
+            ellipse = CopEllipseRecord(
+                centerX: k.centerX, centerY: k.centerY,
+                semiMajor: k.semiMajor, semiMinor: k.semiMinor,
+                angleRad: k.angleRad
+            )
+        } else {
+            ellipse = nil
+        }
+
         return SessionRecord(
-            snapshot: snapshot,
-            ellipse: ellipse,
+            pointCount: Int(snapshot.pointCount),
+            durationSeconds: snapshot.durationSeconds,
+            swayPathLengthMm: snapshot.swayPathLengthMm,
+            ellipseAreaMm2: snapshot.ellipseAreaMm2,
+            meanVelocityMmS: snapshot.meanVelocityMmS,
+            rangeXmm: snapshot.rangeXmm,
+            rmsXmm: snapshot.rmsXmm,
+            rangeYmm: snapshot.rangeYmm,
+            rmsYmm: snapshot.rmsYmm,
+            s1Avg: snapshot.s1Avg,
+            s2Avg: snapshot.s2Avg,
+            s3Avg: snapshot.s3Avg,
+            s1Max: snapshot.s1Max,
+            s2Max: snapshot.s2Max,
+            s3Max: snapshot.s3Max,
+            s1Min: snapshot.s1Min,
+            s2Min: snapshot.s2Min,
+            s3Min: snapshot.s3Min,
+            totalAvgLoad: snapshot.totalAvgLoad,
+            meanFreqXHz: snapshot.meanFreqXHz.isNaN ? nil : snapshot.meanFreqXHz,
+            meanFreqYHz: snapshot.meanFreqYHz.isNaN ? nil : snapshot.meanFreqYHz,
             deviceName: connectedName ?? "Plataforma FootX",
             timestamp: start,
             xs: xs,
             ys: ys,
-            ts: ts
+            ts: ts,
+            ellipse: ellipse
         )
     }
 

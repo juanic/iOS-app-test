@@ -241,23 +241,33 @@ private struct InterpretationCard: View {
 }
 
 #Preview {
-    NavigationStack {
-        ReportView(record: SessionRecord(
-            snapshot: SessionMetricsSnapshot(
-                pointCount: 100, durationSeconds: 30,
-                swayPathLengthMm: 240, ellipseAreaMm2: 320, meanVelocityMmS: 8,
-                rangeXmm: 40, rmsXmm: 12, rangeYmm: 36, rmsYmm: 10,
-                s1Avg: 25, s2Avg: 26, s3Avg: 25,
-                s1Max: 28, s2Max: 30, s3Max: 28,
-                s1Min: 22, s2Min: 22, s3Min: 21,
-                totalAvgLoad: 76, meanFreqXHz: 0.55, meanFreqYHz: 0.62
-            ),
-            ellipse: nil,
-            deviceName: "Plataforma FootX",
-            timestamp: Date(),
-            xs: [0, 5, 10, 8, 3],
-            ys: [0, 2, -1, 3, 1],
-            ts: [0, 100, 200, 300, 400]
-        ))
-    }
+    ReportView(record: SessionRecord(
+        pointCount: 100,
+        durationSeconds: 30,
+        swayPathLengthMm: 240,
+        ellipseAreaMm2: 320,
+        meanVelocityMmS: 8,
+        rangeXmm: 40,
+        rmsXmm: 12,
+        rangeYmm: 36,
+        rmsYmm: 10,
+        s1Avg: 25,
+        s2Avg: 26,
+        s3Avg: 25,
+        s1Max: 28,
+        s2Max: 30,
+        s3Max: 28,
+        s1Min: 22,
+        s2Min: 22,
+        s3Min: 21,
+        totalAvgLoad: 76,
+        meanFreqXHz: 0.55,
+        meanFreqYHz: 0.62,
+        deviceName: "Plataforma FootX",
+        timestamp: Date(),
+        xs: [0, 5, 10, 8, 3],
+        ys: [0, 2, -1, 3, 1],
+        ts: [0, 100, 200, 300, 400],
+        ellipse: nil
+    ))
 }
