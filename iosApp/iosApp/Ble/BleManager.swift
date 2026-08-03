@@ -83,7 +83,7 @@ final class BleManager: NSObject, ObservableObject {
     private func handleFrame(_ data: Data) {
         let bytes = KotlinByteArray(size: Int32(data.count))
         for (index, byte) in data.enumerated() {
-            bytes.set(index: Int32(index), value: byte)
+            bytes.set(index: Int32(index), value: Int8(bitPattern: byte))
         }
         let frame = FootXBridge.shared.parseFrame(data: bytes)
 
