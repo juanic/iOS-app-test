@@ -1,0 +1,18 @@
+# Gradle / Kotlin
+.gradle/
+build/
+.kotlin/
+*.log
+
+# Xcode / XcodeGen (el .xcodeproj se genera con `xcodegen generate`)
+iosApp/iosApp.xcodeproj/
+xcuserdata/
+DerivedData/
+*.xcworkspace
+
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
