@@ -1,6 +1,6 @@
 import Foundation
 
-struct CopEllipseRecord: Codable {
+struct CopEllipseRecord: Codable, Hashable {
     var centerX: Double
     var centerY: Double
     var semiMajor: Double
@@ -9,7 +9,7 @@ struct CopEllipseRecord: Codable {
 }
 
 /// Informe de una sesión de estabilometría, persistible con Codable.
-struct SessionRecord: Codable, Identifiable {
+struct SessionRecord: Codable, Hashable, Identifiable {
     let id: UUID
     let timestamp: Date
     let deviceName: String
