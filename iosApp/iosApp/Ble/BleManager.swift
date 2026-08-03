@@ -14,6 +14,8 @@ final class BleManager: NSObject, ObservableObject {
     @Published var weightKg: Double = 0
     @Published var cop: (x: Double, y: Double) = (0, 0)
     @Published var sensors: (Double, Double, Double) = (0, 0, 0)
+    @Published var isRecording = false
+    @Published var recordElapsed: TimeInterval = 0
 
     private var central: CBCentralManager!
     private var peripheral: CBPeripheral?
@@ -21,6 +23,9 @@ final class BleManager: NSObject, ObservableObject {
     private var txCharacteristic: CBCharacteristic?
     private var calibration: CalibrationData?
     private var calParts: [Double] = []
+    private let recorder = SessionRecorder()
+    private var recordTimer: Timer?
+    private var recordStart: Date?
 
     override init() {
         super.init()
@@ -101,6 +106,13 @@ final class BleManager: NSObject, ObservableObject {
                 calibration: calibration, timestamp: 0
             )
             cop = (point.x, point.y)
+            if isRecording {
+                let ts = Int64((Date().timeIntervalSince1970 * 1000).rounded())
+                recorder.addSample(
+                    x: point.x, y: point.y, timestampMs: ts,
+                    s1: s1, s2: s2, s3: s3
+                )
+            }
         } else if frame.isCalibration {
             // CAL_VALUE envía 3 tramas: (eigen1,eigen2), (eigen3,eigen4), (m,b)
             calParts.append(frame.calFirst)
@@ -114,6 +126,61 @@ final class BleManager: NSObject, ObservableObject {
                 calParts = []
             }
         }
+    }
+
+    // MARK: - Grabación de sesiones
+
+    func startRecording() {
+        recorder.reset()
+        recordStart = Date()
+        recordElapsed = 0
+        isRecording = true
+        recordTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            guard let self, let recordStart = self.recordStart else { return }
+            self.recordElapsed = Date().timeIntervalSince(recordStart)
+        }
+    }
+
+    func stopRecording() -> SessionRecord? {
+        recordTimer?.invalidate()
+        recordTimer = nil
+        guard let start = recordStart, isRecording else {
+            isRecording = false
+            return nil
+        }
+        isRecording = false
+        recordStart = nil
+        let duration = Date().timeIntervalSince(start)
+        let snapshot = recorder.compute(durationSeconds: duration)
+        let ellipse = recorder.ellipse()
+
+        let kotlinXs = recorder.xs()
+        let kotlinYs = recorder.ys()
+        let kotlinTs = recorder.ts()
+        var xs: [Double] = []
+        var ys: [Double] = []
+        var ts: [Int64] = []
+        for i in 0..<kotlinXs.size { xs.append(kotlinXs.get(index: i)) }
+        for i in 0..<kotlinYs.size { ys.append(kotlinYs.get(index: i)) }
+        for i in 0..<kotlinTs.size { ts.append(kotlinTs.get(index: i)) }
+
+        return SessionRecord(
+            snapshot: snapshot,
+            ellipse: ellipse,
+            deviceName: connectedName ?? "Plataforma FootX",
+            timestamp: start,
+            xs: xs,
+            ys: ys,
+            ts: ts
+        )
+    }
+
+    func cancelRecording() {
+        recordTimer?.invalidate()
+        recordTimer = nil
+        recordStart = nil
+        recordElapsed = 0
+        isRecording = false
     }
 }
 
@@ -149,6 +216,7 @@ extension BleManager: CBCentralManagerDelegate {
         txCharacteristic = nil
         calibration = nil
         calParts = []
+        cancelRecording()
         stateText = "Desconectado"
     }
 }
