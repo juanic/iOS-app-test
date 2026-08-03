@@ -36,12 +36,25 @@ jobs:
           java-version: "17"
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Link Kotlin framework
+        run: |
+          chmod +x gradlew
+          if [ "$(uname -m)" = "arm64" ]; then
+            TASK=linkDebugFrameworkIosSimulatorArm64
+            BIN=iosSimulatorArm64
+          else
+            TASK=linkDebugFrameworkIosX64
+            BIN=iosX64
+          fi
+          echo "Host arch: $(uname -m) -> :shared:$TASK"
+          ./gradlew :shared:$TASK --console=plain
+          mkdir -p shared/build/xcode-frameworks
+          cp -R shared/build/bin/$BIN/debugFramework/Shared.framework shared/build/xcode-frameworks/
       - name: Generate Xcode project
         working-directory: iosApp
         run: xcodegen generate
       - name: Build app
         run: |
-          chmod +x gradlew
           xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp \
             -configuration Debug -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
